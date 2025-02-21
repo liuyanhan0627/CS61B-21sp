@@ -180,7 +180,7 @@ public class Model extends Observable {
             int size = b.size();
             for (int i = 0; i < size; i++) {
                 for (int j = 0; j < size; j++) {
-                  int[][] AdjcentIndex = {
+                  int[][] AdjacentIndex = {
                           {i - 1, j},
                           {i + 1, j},
                           {i, j - 1},
@@ -188,12 +188,12 @@ public class Model extends Observable {
                   };
                   for (int k = 0; k < 4; k++){
                       // Index Out of Bounds
-                      if (AdjcentIndex[k][0] < 0 || AdjcentIndex[k][1] < 0) {
+                      if (AdjacentIndex[k][0] < 0 || AdjacentIndex[k][1] < 0) {
                           continue;
                           // Index Out of Bounds
-                      }else if (AdjcentIndex[k][0] >= size || AdjcentIndex[k][1] >= size) {
+                      }else if (AdjacentIndex[k][0] >= size || AdjacentIndex[k][1] >= size) {
                           continue;
-                      } else if (b.tile(AdjcentIndex[k][0], AdjcentIndex[k][1]).value() == b.tile(i, j).value()) {
+                      } else if (b.tile(AdjacentIndex[k][0], AdjacentIndex[k][1]).value() == b.tile(i, j).value()) {
                           return true;
                       }
                       }
