@@ -1,5 +1,7 @@
 package game2048;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Formatter;
 import java.util.Observable;
 
@@ -107,19 +109,71 @@ public class Model extends Observable {
      *    and the trailing tile does not.
      * */
     public boolean tilt(Side side) {
-        boolean changed;
-        changed = false;
-
-        // TODO: Modify this.board (and perhaps this.score) to account
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
-
+        boolean changed;
+        changed = false;
+        // set the side(may be WEST) to NORTH.
+        board.setViewingPerspective(side);
+        int size = board.size();
+        for (int col = 0; col < size; col++){
+            if (processOneColumn(col)){
+                changed = true;
+            }
+        }
+    
+        // set back the correct side(NORTH to NORTH).
+        board.setViewingPerspective(Side.NORTH);
         checkGameOver();
         if (changed) {
             setChanged();
         }
         return changed;
     }
+
+
+    /** Processes a single column whose index is col.
+     */
+    public boolean processOneColumn(int col){
+        int size = board.size();
+        boolean changed = false;
+        int beginRowIndex = size - 1;
+
+        // 从上到下遍历一列的每个方块，当前处理方块为 tileP
+        for (int row = size - 1; row >= 0; row--){
+            // tileP: Tile being processed
+            Tile tileP = board.tile(col, row);
+            if (tileP != null){
+
+                // 对 tileP，遍历它上方的所有方块
+                // dRow:  detect row, from top to bottem
+                for (int dRow = beginRowIndex; dRow > row; dRow--){
+                    // tileD: tile being detected
+                    Tile tileD = board.tile(col, dRow);
+
+                    if (tileD == null){
+                        board.move(col, dRow, tileP);
+                        changed = true;
+                        break;
+                    } else if (tileP.value() == tileD.value()) {
+                        // tileD has not been merged yet
+                        if (tileD.next().value() == tileD.value()) {
+                            // add the score
+                            this.score += 2 * tileD.value();
+                            board.move(col, dRow, tileP);
+                            // (col, dRow) 处的方块已经和其他方块合并过
+                            beginRowIndex = dRow - 1;
+                            changed = true;
+                            break;
+                        }
+                    }
+                }
+
+                }
+            }
+        return changed;
+    }
+    
 
     /** Checks if the game is over and sets the gameOver variable
      *  appropriately.
